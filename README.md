@@ -1,7 +1,7 @@
 # vue-MamicPlayer
 
 [![npm](https://img.shields.io/npm/v/vue-mamicplayer.svg?style=flat-square)](https://www.npmjs.com/package/vue-mamicplayer)
-[![npm](https://img.shields.io/npm/l/vue-mamicplayer.svg?style=flat-square)](https://github.com/MoePlayer/APlayer/blob/master/LICENSE)
+[![npm](https://img.shields.io/npm/l/vue-mamicplayer.svg?style=flat-square)](https://github.com/Nexmamic/vue-mamicplayer/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/dt/vue-mamicplayer.svg?style=flat-square)](https://www.npmjs.com/package/vue-mamicplayer)
 
 [中文文档](https://github.com/Nexmamic/vue-mamicplayer/blob/main/README-zh.md)
