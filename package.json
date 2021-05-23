@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Amatke31/MamicPlayer.git"
+    "url": "git+https://github.com/Nexmamic/MamicPlayer.git"
   },
   "keywords": [
     "Nexmamic",
@@ -21,11 +21,11 @@
     "MamicPlayer"
   ],
   "author": "Nexmamic",
-  "license": "ISC",
+  "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/Amatke31/MamicPlayer/issues"
+    "url": "https://github.com/Nexmamic/MamicPlayer/issues"
   },
-  "homepage": "https://github.com/Amatke31/MamicPlayer/#readme",
+  "homepage": "https://github.com/Nexmamic/MamicPlayer/#readme",
   "dependencies": {
     "vue": "^2.6.12",
     "webpack-cli": "^3.3.12",

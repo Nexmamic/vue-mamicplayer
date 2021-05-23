@@ -4,22 +4,22 @@
 [![npm](https://img.shields.io/npm/l/vue-mamicplayer.svg?style=flat-square)](https://github.com/MoePlayer/APlayer/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/dt/vue-mamicplayer.svg?style=flat-square)](https://www.npmjs.com/package/vue-mamicplayer)
 
-[中文文档](https://github.com/Nexmamic/vue-mamicplayer/blob/main/README-zh.md)
+[English doc](https://github.com/Nexmamic/vue-mamicplayer/#readme)
 
 ## Introduction
 
-MamicPlayer is Nexmamic platform lovely Player  
-There are two modes of full screen and suspension
+MamicPlayer是Nexmamic的悬浮播放器  
+他有全屏和悬浮两种模式
 
-([Nexmamic](https://music.maftert.com) is a music creation sharing platform in China)
+([Nexmamic](https://music.maftert.com) 是中国的音乐创作分享平台)
 
 ### Features
 
-- Lyrics
-- Other UI
-- Custom UI
+- 歌词
+- 更好看的UI
+- 自定义UI
 
-Let's have a look:
+让我们来看看吧:
 
 ![](public/player.png)
 
@@ -37,7 +37,7 @@ npm install vue-mamicplayer
 
 #### Vue
 
-Add code to `main.js`
+向 `main.js` 增加代码
 
 ```javascript
 import MamicPlayer from 'vue-MamicPlayer'
@@ -58,7 +58,7 @@ Vue.use(Player)
 
 #### Nuxt
 
-Create a plugin file for MamicPlayer, `plugins/MamicPlayer.js` with the below content:
+创建一个插件文件给MamicPlayer,  `plugins/MamicPlayer.js` 内容如下:
 
 ```javascript
 import Vue from 'vue'
@@ -79,7 +79,7 @@ const Player = {
 Vue.use(Player)
 ```
 
-Once installed, update your `nuxt.config.js` file to include the Vuetify module in the build.
+安装之后，更新你的 `nuxt.config.js` 从而在构建中包含 MamicPlayer 模块。
 
 ```js
 {
@@ -100,38 +100,38 @@ Once installed, update your `nuxt.config.js` file to include the Vuetify module 
 
 ## Config
 
-parameter:
+参数:
 
-| Name         | type    | default | description                                         |
-| ------------ | ------- | ------- | --------------------------------------------------- |
-| defaultCover | String  |         | If the playlist is empty, display this picture      |
-| playlist     | Array   |         | playlist                                            |
-| localplw     | Boolean | true    | Whether to save the music to be played localStorage |
+| 名称         | 类型    | 默认值 | 说明                             |
+| ------------ | ------- | ------ | -------------------------------- |
+| defaultCover | String  |        | 如果播放列表为空，则显示该图片   |
+| playlist     | Array   |        | 播放列表                         |
+| localplw     | Boolean | true   | 是否将要播放的音乐保存到本地存储 |
 
-event:
+事件:
 
-| event name | return    | description                                                                 |
-| ---------- | --------- | --------------------------------------------------------------------------- |
-| onMusic    | MusicInfo | When the player is shown in full screen, the user clicks on the music name  |
-| onArtist   | MusicInfo | When the player is shown in full screen, the user clicks on the artist name |
-| updateData | MusicInfo | Request to refresh the music list                                           |
+| 名称       | 返回值    | 说明                                 |
+| ---------- | --------- | ------------------------------------ |
+| onMusic    | MusicInfo | 当播放器全屏显示时，用户单击音乐名称 |
+| onArtist   | MusicInfo | 当播放器全屏显示时，用户单击艺人名称 |
+| updateData | MusicInfo | 请求刷新音乐列表                     |
 
-playlist format:
+播放列表格式:
 
 ```json
 [
   {
-    //artist name
+    //艺人名字
     "artist": "Amatke31",
-    //music cover url
+    //艺人头像url
     "cover": "/img/1.png",
-    //music name
+    //音乐名
     "name": "dual existence(remox)",
-    //music source url
+    //音乐文件url
     "source": "/music/1.wav",
-    //and other you want
-    //this will not affect the Player
-    //like music url?
+    //你也可以加点其他的，这在很多事件中非常有用
+    //这不会影响到Player
+    //比如音乐介绍地址
     "music_url": "https://music.maftert.com/Music/4"
   },
   {
@@ -146,7 +146,7 @@ playlist format:
 
 ## example
 
-Next, we will show a more complete project
+接下来，我们将展示一个更完整的项目
 
 app.vue
 
@@ -171,7 +171,7 @@ export default {
     };
   },
   beforeMount() {
-    // Create a play list locally
+    // 在本地创建播放列表
     // format: [1,2,3]
     if (localStorage.getItem("Player_list")) {
     } else {
@@ -179,14 +179,14 @@ export default {
     }
   },
   mounted() {
-    // Get playlist from localStorage
+    // 从本地存储获取播放列表
     var playlist_num = JSON.parse(localStorage.getItem("Player_list"));
     var playlist = new Array();
     var getPlayerListInfo = [];
     if (playlist_num.length) {
       playlist_num.forEach(async (item, index) => {
         getPlayerListInfo[index] = new Promise((resolve) => {
-          //Request API
+          // 请求API
           this.$axios({
             url: "/Music/info",
             method: "get",
@@ -208,24 +208,24 @@ export default {
       });
       Promise.all(getPlayerListInfo).then((message) => {
         playlist = message;
-        // Change global variables for easy access
+        // 更改全局变量以便于访问
         this.Player.updatePlaylist(playlist);
-        // Change playlist
+        // 更改播放列表
         this.playlist = this.Player.playlist;
       });
     }
   },
   methods: {
     goMusic: function (id) {
-      // Go to song page
+      // 转到歌曲页
       this.$router.push(id.music_url);
     },
     goArtist: function (id) {
-      // Go to artist page
+      // 转到艺人页
       this.$router.push(id.artist_url);
     },
     update: function () {
-      // refresh data
+      // 更新数据
       if (this.Player.playlist.length) {
         this.playlist = this.Player.playlist;
       }
@@ -235,15 +235,15 @@ export default {
 </script>
 ```
 
-in other page
+在其他页面中
 
-musicPage.vue
+例如musicPage.vue
 
 ```vue
 <template>
   ...
   <div v-on:click="addToList()">
-    add to playlist
+    增加到播放列表
   </div>
   ...
 </template>
@@ -252,7 +252,7 @@ export default {
   ...
   methods: {
     addToList() {
-      // get music id list from localStorage
+      // 从本地存储获取音乐id列表
       var locallist = JSON.parse(localStorage.getItem("Player_list"));
       if (locallist.indexOf(parseInt(this.$route.params.id)) == -1) {
         var playlist = [];
@@ -266,9 +266,9 @@ export default {
         playlist = this.Player.playlist;
         playlist.push(info);
         locallist.push(parseInt(this.$route.params.id));
-        // Update to global
+        // 更新到全局
         this.Player.updatePlaylist(playlist);
-        // Update music id list to localStorage
+        // 将音乐id列表更新到localStorage
         localStorage.setItem("Player_list", JSON.stringify(locallist));
       } else {
         alert("Already in the play list!");
