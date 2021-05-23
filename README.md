@@ -35,7 +35,7 @@ yarn add vue-mamicplayer
 npm install vue-mamicplayer
 ```
 
-#### Vue
+###3 Vue
 
 Add code to `main.js`
 
@@ -56,7 +56,7 @@ const Player = {
 Vue.use(Player)
 ```
 
-#### Nuxt
+### Nuxt
 
 Create a plugin file for MamicPlayer, `plugins/MamicPlayer.js` with the below content:
 

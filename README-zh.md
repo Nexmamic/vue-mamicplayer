@@ -35,7 +35,7 @@ yarn add vue-mamicplayer
 npm install vue-mamicplayer
 ```
 
-#### Vue
+### Vue
 
 向 `main.js` 增加代码
 
@@ -56,7 +56,7 @@ const Player = {
 Vue.use(Player)
 ```
 
-#### Nuxt
+### Nuxt
 
 创建一个插件文件给MamicPlayer,  `plugins/MamicPlayer.js` 内容如下:
 
