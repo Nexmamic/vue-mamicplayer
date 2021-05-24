@@ -1,96 +1,97 @@
 <template>
-  <div id="player" class="player">
-    <audio
-      ref="audio"
-      @pause="onPause"
-      @play="onPlay"
-      @timeupdate="onTimeUpdate"
-      @loadedmetadata="onLoadedMetaData"
-      preload="auto"
-      :src="current.source"
-      controls="controls"
-      style="display: none"
-      id="audio"
-    ></audio>
-    <div class="btn max2cd iconfont icon-suoxiao" @click="playerMax"></div>
-    <div class="player-controls">
-      <div class="music-imgs">
-        <img
-          class="img"
-          v-on:click="playerMax"
-          v-if="current.cover"
-          :src="current.cover"
-        />
-        <img
-          class="img"
-          v-on:click="playerMax"
-          v-if="!current.cover"
-          :src="defaultCover"
-        />
-      </div>
-      <div id="player-content3">
-        <div
-          class="btn prev iconfont icon-diyigeshipin"
-          @click="prevAudio"
-        ></div>
-        <div
-          class="btn play-pause iconfont icon-kaishi"
-          @click="startPlayOrPause"
-        ></div>
-        <div
-          class="btn next iconfont icon-zuihouyigeshipin"
-          @click="nextAudio"
-        ></div>
-      </div>
-      <div id="player-content2">
-        <span @click="playerNarrow"
-          ><a class="music-name" @click="goMusic">{{ current.name }}</a></span
-        >
-        <span class="max2d">-</span>
-        <span @click="playerNarrow"
-          ><a class="artist-name" @click="goArtist">{{
-            current.artist
-          }}</a></span
-        >
-        <div class="time">
-          <div class="current-time">
-            {{ audio.currentTime | formatSecond }}
+  <div>
+    <div id="player" class="player">
+      <audio
+        ref="audio"
+        @pause="onPause"
+        @play="onPlay"
+        @timeupdate="onTimeUpdate"
+        @loadedmetadata="onLoadedMetaData"
+        preload="auto"
+        :src="current.source"
+        controls="controls"
+        style="display: none"
+        id="audio"
+      ></audio>
+      <div class="btn max2cd iconfont icon-suoxiao" @click="playerMax"></div>
+      <div class="player-controls">
+        <div class="music-imgs">
+          <img
+            class="img"
+            v-on:click="playerMax"
+            v-if="current.cover"
+            :src="current.cover"
+          />
+          <img
+            class="img"
+            v-on:click="playerMax"
+            v-if="!current.cover"
+            :src="defaultCover"
+          />
+        </div>
+        <div id="player-content3">
+          <div
+            class="btn prev iconfont icon-diyigeshipin"
+            @click="prevAudio"
+          ></div>
+          <div
+            class="btn play-pause iconfont icon-kaishi"
+            @click="startPlayOrPause"
+          ></div>
+          <div
+            class="btn next iconfont icon-zuihouyigeshipin"
+            @click="nextAudio"
+          ></div>
+        </div>
+        <div id="player-content2">
+          <span @click="playerNarrow"
+            ><a class="music-name" @click="goMusic">{{ current.name }}</a></span
+          >
+          <span class="max2d">-</span>
+          <span @click="playerNarrow"
+            ><a class="artist-name" @click="goArtist">{{
+              current.artist
+            }}</a></span
+          >
+          <div class="time">
+            <div class="current-time">
+              {{ audio.currentTime | formatSecond }}
+            </div>
+            <div class="total-time">{{ audio.maxTime | formatSecond }}</div>
           </div>
-          <div class="total-time">{{ audio.maxTime | formatSecond }}</div>
+          <div
+            id="s-area"
+            @mousedown="handleTouchStart"
+            @mousemove="sethover"
+            @mouseout="hideHover"
+          >
+            <div class="slider-track"></div>
+            <div class="silderNone" :style="'width:' + 0 + '%'"></div>
+            <div id="s-hover" :style="'width:' + hoverTime + '%'"></div>
+            <div class="slider-fill" :style="'width:' + sliderTime + '%'"></div>
+            <!-- <div class="slider-thumb" :style="'left:' + sliderTime + '%'"></div> -->
+          </div>
         </div>
-        <div
-          id="s-area"
-          @mousedown="handleTouchStart"
-          @mousemove="sethover"
-          @mouseout="hideHover"
-        >
-          <div class="slider-track"></div>
-          <div class="silderNone" :style="'width:' + 0 + '%'"></div>
-          <div id="s-hover" :style="'width:' + hoverTime + '%'"></div>
-          <div class="slider-fill" :style="'width:' + sliderTime + '%'"></div>
-          <!-- <div class="slider-thumb" :style="'left:' + sliderTime + '%'"></div> -->
+        <div class="player-controls3">
+          <div
+            class="btn prev iconfont icon-diyigeshipin"
+            @click="prevAudio"
+          ></div>
+          <div
+            class="btn play-pause iconfont icon-kaishi"
+            @click="startPlayOrPause"
+          ></div>
+          <div
+            class="btn next iconfont icon-zuihouyigeshipin"
+            @click="nextAudio"
+          ></div>
         </div>
-      </div>
-      <div class="player-controls3">
-        <div
-          class="btn prev iconfont icon-diyigeshipin"
-          @click="prevAudio"
-        ></div>
-        <div
-          class="btn play-pause iconfont icon-kaishi"
-          @click="startPlayOrPause"
-        ></div>
-        <div
-          class="btn next iconfont icon-zuihouyigeshipin"
-          @click="nextAudio"
-        ></div>
       </div>
     </div>
   </div>
 </template>
 <script>
 import $ from "jquery";
-import { INT24 } from "mysql/lib/protocol/constants/types";
 function realFormatSecond(second) {
   var secondType = typeof second;
   if (secondType === "number" || secondType === "string") {
