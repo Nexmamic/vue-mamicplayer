@@ -9,7 +9,7 @@
 ## Introduction
 
 MamicPlayer is Nexmamic platform lovely Player  
-There are two modes of full screen and suspension
+It has two modes, full screen and floating
 
 ([Nexmamic](https://music.maftert.com) is a music creation sharing platform in China)
 
