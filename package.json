@@ -1,7 +1,7 @@
 {
   "name": "vue-mamicplayer",
-  "version": "1.0.0",
-  "description": "Nexmammic悬浮播放器",
+  "version": "1.0.3",
+  "description": "vue player for nexmamic",
   "main": "dist/main.js",
   "files": [
     "dist/",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Nexmamic/MamicPlayer.git"
+    "url": "git+https://github.com/Nexmamic/vue-mamicplayer.git"
   },
   "keywords": [
     "Nexmamic",
@@ -23,9 +23,9 @@
   "author": "Nexmamic",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/Nexmamic/MamicPlayer/issues"
+    "url": "https://github.com/Nexmamic/vue-mamicplayer/issues"
   },
-  "homepage": "https://github.com/Nexmamic/MamicPlayer/#readme",
+  "homepage": "https://github.com/Nexmamic/vue-mamicplayer/#readme",
   "dependencies": {
     "vue": "^2.6.12",
     "webpack-cli": "^3.3.12",

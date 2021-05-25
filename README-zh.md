@@ -11,7 +11,7 @@
 MamicPlayer是Nexmamic的悬浮播放器  
 他有全屏和悬浮两种模式
 
-([Nexmamic](https://music.maftert.com) 是中国的音乐创作分享平台)
+([Nexmamic](https://www.nexmamic.com) 是中国的音乐创作分享平台)
 
 ### Features
 
@@ -40,7 +40,7 @@ npm install vue-mamicplayer
 向 `main.js` 增加代码
 
 ```javascript
-import MamicPlayer from 'vue-MamicPlayer'
+import MamicPlayer from 'vue-mamicplayer'
 
 const Player = {
     install(Vue) {
@@ -62,7 +62,7 @@ Vue.use(Player)
 
 ```javascript
 import Vue from 'vue'
-import MamicPlayer from 'vue-MamicPlayer'
+import MamicPlayer from 'vue-mamicplayer'
 
 const Player = {
     install(Vue) {
@@ -132,14 +132,14 @@ Vue.use(Player)
     //你也可以加点其他的，这在很多事件中非常有用
     //这不会影响到Player
     //比如音乐介绍地址
-    "music_url": "https://music.maftert.com/Music/4"
+    "music_url": "https://www.nexmamic.com/Music/4"
   },
   {
     "artist": "Zhou",
     "cover": "/img/2.png",
     "name": "He's a pirate",
     "source": "/music/2.wav",
-    "artist_url": "https://music.maftert.com/Users/1"
+    "artist_url": "https://www.nexmamic.com/Users/1"
   }
 ]
 ```

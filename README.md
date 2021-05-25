@@ -11,7 +11,7 @@
 MamicPlayer is Nexmamic platform lovely Player  
 It has two modes, full screen and floating
 
-([Nexmamic](https://music.maftert.com) is a music creation sharing platform in China)
+([Nexmamic](https://www.nexmamic.com) is a music creation sharing platform in China)
 
 ### Features
 
@@ -35,12 +35,12 @@ yarn add vue-mamicplayer
 npm install vue-mamicplayer
 ```
 
-###3 Vue
+### Vue
 
 Add code to `main.js`
 
 ```javascript
-import MamicPlayer from 'vue-MamicPlayer'
+import MamicPlayer from 'vue-mamicplayer'
 
 const Player = {
     install(Vue) {
@@ -62,7 +62,7 @@ Create a plugin file for MamicPlayer, `plugins/MamicPlayer.js` with the below co
 
 ```javascript
 import Vue from 'vue'
-import MamicPlayer from 'vue-MamicPlayer'
+import MamicPlayer from 'vue-mamicplayer'
 
 const Player = {
     install(Vue) {
@@ -132,14 +132,14 @@ playlist format:
     //and other you want
     //this will not affect the Player
     //like music url?
-    "music_url": "https://music.maftert.com/Music/4"
+    "music_url": "https://www.nexmamic.com/Music/4"
   },
   {
     "artist": "Zhou",
     "cover": "/img/2.png",
     "name": "He's a pirate",
     "source": "/music/2.wav",
-    "artist_url": "https://music.maftert.com/Users/1"
+    "artist_url": "https://www.nexmamic.com/Users/1"
   }
 ]
 ```
