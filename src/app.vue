@@ -67,9 +67,9 @@
           >
             <div class="slider-track"></div>
             <div class="silderNone" :style="'width:' + 0 + '%'"></div>
-            <div id="s-hover" :style="'width:' + hoverTime + '%'"></div>
+            <!-- <div id="s-hover" :style="'width:' + hoverTime + '%'"></div> -->
             <div class="slider-fill" :style="'width:' + sliderTime + '%'"></div>
-            <!-- <div class="slider-thumb" :style="'left:' + sliderTime + '%'"></div> -->
+            <div class="slider-thumb" :style="'left:' + thumbTime + '%'"></div>
           </div>
         </div>
         <div class="player-controls3">
@@ -127,6 +127,7 @@ export default {
       sliderTime: 0,
       silderNone: 0,
       hoverTime: 0,
+      thumbTime: 0,
 
       audio: {
         playing: false,
@@ -220,6 +221,8 @@ export default {
     nextAudio() {
       var that = this;
       if (this.playlist.length) {
+        $(".player-controls").removeClass("active");
+        $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
         if (this.playlist.length - 1 == this.plw) {
           this.plw = -1;
         }
@@ -227,6 +230,7 @@ export default {
         this.current = this.playlist[this.plw];
         this.updateData();
         this.sliderTime = 0;
+        this.thumbTime = 0;
         this.audio.currentTime = "00:00";
         this.play = true;
         $(".player3").css({
@@ -243,6 +247,8 @@ export default {
     prevAudio() {
       var that = this;
       if (this.playlist.length) {
+        $(".player-controls").removeClass("active");
+        $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
         if (this.plw == 0) {
           this.plw = this.playlist.length;
         }
@@ -250,6 +256,7 @@ export default {
         this.current = this.playlist[this.plw];
         this.updateData();
         this.sliderTime = 0;
+        this.thumbTime = 0;
         this.audio.currentTime = "00:00";
         this.play = true;
         $(".player3").css({
@@ -294,7 +301,10 @@ export default {
       if (this.hoverTime == 0) {
         this.audio.currentTime = res.target.currentTime;
       }
-      this.sliderTime = (res.target.currentTime / this.audio.maxTime) * 100;
+      if (this.hoverTime == 0) {
+        this.sliderTime = (res.target.currentTime / this.audio.maxTime) * 100;
+        this.thumbTime = (res.target.currentTime / this.audio.maxTime) * 100;
+      }
     },
     setValue(e) {
       const { maxTime, minTime, step } = this.audio;
@@ -320,6 +330,8 @@ export default {
       this.hoverTime =
         ((e.clientX - $("#s-area").offset().left) / $("#s-area").width()) * 100;
       this.audio.currentTime = value;
+      this.thumbTime = this.hoverTime;
+      this.sliderTime = this.hoverTime;
     },
     hideHover() {
       this.hoverTime = 0;
@@ -886,19 +898,21 @@ a {
   bottom: 0;
   left: 0;
   width: 0;
-  background-color: rgba(255, 255, 255);
+  background-color: rgba(255, 255, 255, 0.733);
   transition: 0.2s ease width;
 }
 
 .slider-thumb {
   position: absolute;
   width: 0.5rem;
-  top: 0.175rem;
+  top: 0.15rem;
+  /* top: 2.18px; */
   height: 0.5rem;
-  background-color: rgba(255, 255, 255, 0.733);
+  background-color: rgba(255, 255, 255);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   cursor: pointer;
+  transition: 0.2s ease width;
 }
 
 .max2cd {
