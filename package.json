@@ -1,6 +1,6 @@
 {
   "name": "vue-mamicplayer",
-  "version": "1.0.5",
+  "version": "1.0.4",
   "description": "vue player for nexmamic",
   "main": "dist/main.js",
   "files": [

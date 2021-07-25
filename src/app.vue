@@ -291,9 +291,6 @@ export default {
       $(".player-controls").removeClass("active");
       $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
     },
-    handleFocus() {
-      console.log("focues");
-    },
     onLoadedMetaData(res) {
       this.audio.maxTime = parseInt(res.target.duration);
     },
@@ -336,6 +333,9 @@ export default {
     hideHover() {
       this.hoverTime = 0;
       this.audio.currentTime = this.$refs.audio.currentTime;
+      this.onTimeUpdate({
+        target: { currentTime: this.$refs.audio.currentTime },
+      });
     },
     handleTouchStart(e) {
       this.setValue(e);
