@@ -182,6 +182,12 @@ export default {
     updateData: function () {
       this.$emit("updateData", this.current);
     },
+    goPlayerPage: function () {
+      this.$emit("goPlayerPage", this.current);
+    },
+    goNormalPage: function () {
+      this.$emit("goNormalPage", this.current);
+    },
     playerMax: function () {
       if ($("#player").hasClass("player3")) {
         $("#player").addClass("player");
@@ -190,6 +196,7 @@ export default {
           background: "rgba(255, 255, 255, 0.8)",
           "background-size": "100% 100%",
         });
+        this.goNormalPage();
       } else {
         $("#player").addClass("player3");
         $("#player").removeClass("player");
@@ -197,6 +204,7 @@ export default {
           background: `url('${this.current.cover}')  center center no-repeat`,
           "background-size": "0",
         });
+        this.goPlayerPage();
       }
     },
     playerNarrow: function () {
@@ -220,7 +228,7 @@ export default {
     },
     nextAudio() {
       var that = this;
-      if (this.playlist.length) {
+      if (this.playlist.length > 1) {
         $(".player-controls").removeClass("active");
         $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
         if (this.playlist.length - 1 == this.plw) {
@@ -246,7 +254,7 @@ export default {
     },
     prevAudio() {
       var that = this;
-      if (this.playlist.length) {
+      if (this.playlist.length > 1) {
         $(".player-controls").removeClass("active");
         $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
         if (this.plw == 0) {
