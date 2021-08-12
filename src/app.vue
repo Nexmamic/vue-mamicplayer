@@ -66,10 +66,9 @@
             @mouseout="hideHover"
           >
             <div class="slider-track"></div>
-            <div class="silderNone" :style="'width:' + 0 + '%'"></div>
-            <!-- <div id="s-hover" :style="'width:' + hoverTime + '%'"></div> -->
+            <div id="s-hover" :style="'width:' + hoverTime + '%'"></div>
             <div class="slider-fill" :style="'width:' + sliderTime + '%'"></div>
-            <div class="slider-thumb" :style="'left:' + thumbTime + '%'"></div>
+            <!-- <div class="slider-thumb" :style="'left:' + thumbTime + '%'"></div> -->
           </div>
         </div>
         <div class="player-controls3">
@@ -164,7 +163,20 @@ export default {
   },
   watch: {
     playlist(list) {
-      this.current = list[this.plw];
+      if(list[this.plw]){
+        this.current = list[this.plw];
+      }
+      else {
+        this.current = 
+        {
+          startTime: "00:00",
+          endtime: "00:00",
+          cover: "",
+          name: "",
+          artist: "",
+          source: "",
+        };
+      }
     },
     plw(plw) {
       if (this.localplw) {
@@ -431,13 +443,13 @@ a {
   height: 150%;
   position: fixed;
   background-image: inherit;
-  /* background: url("/img/background-dark.png") no-repeat center center; */
-  background-size: 100% 100%;
-  /* background-attachment: fixed; */
+   /*background: url("/img/background-dark.png") no-repeat center center; */
+  background-size: auto 100%;
+   /*background-attachment: fixed; */
   filter: blur(100px);
   z-index: 2001;
   transition: 0.8s;
-  /* -webkit-animation: rotateAlbumArt 50s linear 0s infinite forwards;
+   /*-webkit-animation: rotateAlbumArt 50s linear 0s infinite forwards;
     animation: rotateAlbumArt 50s linear 0s infinite forwards; */
 }
 
@@ -515,12 +527,14 @@ a {
 
 @media screen and (orientation: portrait) {
   .player3 .player-controls {
-    width: 94vw;
+    width: 100%;
     padding: 7vw;
   }
   .player3 .music-imgs {
-    width: 80vw;
-    height: 80vw;
+    width: calc(84vw - 30px);
+    height: calc(84vw - 30px);
+    /*max-width: 80vw;*/
+    /*max-height: 80vw;*/
   }
 }
 
@@ -570,16 +584,12 @@ a {
   width: 70%;
   height: 70%;
   z-index: 1000;
-  transition: 0.5s;
   transition: 0.8s;
   box-shadow: 0 0px 10px #5a5a5a54;
   object-fit: cover;
 }
 
 .player3 .player-controls.active .music-imgs .img {
-  display: inline-block;
-  position: relative;
-  border-radius: 10%;
   top: 0;
   left: 0;
   width: 100%;
