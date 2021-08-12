@@ -118,6 +118,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    dse: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: function () {
     return {
@@ -160,6 +164,9 @@ export default {
     setInterval(() => {
       this.$emit("updateData", this.current);
     }, 1000);
+    if (this.dse){
+      $("#player").addClass("dse");
+    }
   },
   watch: {
     playlist(list) {
@@ -212,10 +219,18 @@ export default {
       } else {
         $("#player").addClass("player3");
         $("#player").removeClass("player");
-        $("#player").css({
-          background: `url('${this.current.cover}')  center center no-repeat`,
-          "background-size": "0",
-        });
+        if (!this.dse){
+          $("#player").css({
+            background: `url('${this.current.cover}')  center center no-repeat`,
+            "background-size": "0",
+          });
+        }
+        else {
+          $("#player").css({
+            background: "rgba(0, 0, 0, 0.8)",
+            "background-size": "100% 100%",
+          });
+        }
         this.goPlayerPage();
       }
     },
@@ -253,10 +268,12 @@ export default {
         this.thumbTime = 0;
         this.audio.currentTime = "00:00";
         this.play = true;
-        $(".player3").css({
-          background: `url('${this.current.cover}')  center center no-repeat`,
-          "background-size": "0",
-        });
+        if (!this.dse){
+          $(".player3").css({
+            background: `url('${this.current.cover}')  center center no-repeat`,
+            "background-size": "0",
+          });
+        }
         that.silderNone = 0;
         times = setInterval(() => {
           window.clearInterval(times);
@@ -279,10 +296,12 @@ export default {
         this.thumbTime = 0;
         this.audio.currentTime = "00:00";
         this.play = true;
-        $(".player3").css({
-          background: `url('${this.current.cover}')  center center no-repeat`,
-          "background-size": "0",
-        });
+        if (!this.dse){
+          $(".player3").css({
+            background: `url('${this.current.cover}')  center center no-repeat`,
+            "background-size": "0",
+          });
+        }
         that.silderNone = 0;
         times = setInterval(() => {
           window.clearInterval(times);
@@ -411,6 +430,11 @@ a {
   overflow: hidden;
 }
 
+.dse.player {
+  box-shadow: unset;
+  transition: unset;
+}
+
 .player.max {
   max-width: 100%;
   background: rgba(255, 255, 255, 0.9);
@@ -435,6 +459,12 @@ a {
   overflow: hidden;
 }
 
+.dse.player3{
+  -webkit-backdrop-filter: unset;
+  backdrop-filter: unset;
+  transition: unset;
+}
+
 .player3::before {
   content: "";
   top: -25%;
@@ -453,6 +483,11 @@ a {
   transition: 0.8s;
    /*-webkit-animation: rotateAlbumArt 50s linear 0s infinite forwards;
     animation: rotateAlbumArt 50s linear 0s infinite forwards; */
+}
+
+.dse.player3::before {
+  filter: unset;
+  transition: unset;
 }
 
 .player div {
@@ -499,6 +534,10 @@ a {
   z-index: 2002;
 }
 
+.dse.player .music-imgs {
+  transition: unset;
+}
+
 .player2 .music-imgs {
   position: absolute;
   top: -9px;
@@ -525,6 +564,10 @@ a {
   /* overflow: hidden; */
   text-align: center;
   z-index: 2002;
+}
+
+.dse.player3 .music-imgs {
+  transition: unset;
 }
 
 @media screen and (orientation: portrait) {
@@ -589,6 +632,10 @@ a {
   transition: 0.8s;
   box-shadow: 0 0px 10px #5a5a5a54;
   object-fit: cover;
+}
+
+.dse.player3 .player-controls .music-imgs .img {
+  transition: unset;
 }
 
 .player3 .player-controls.active .music-imgs .img {
@@ -900,6 +947,10 @@ a {
   transition: 0.2s ease width;
 }
 
+.dse .silderNone {
+  transition: unset;
+}
+
 .slider-track {
   position: absolute;
   top: -29px;
@@ -922,6 +973,10 @@ a {
   transition: 0.2s ease width;
 }
 
+.dse .slider-fill {
+  transition: unset;
+}
+
 .slider-thumb {
   position: absolute;
   width: 0.5rem;
@@ -933,6 +988,10 @@ a {
   transform: translate(-50%, -50%);
   cursor: pointer;
   transition: 0.2s ease width;
+}
+
+.dse .slider-thumb {
+  transition: unset;
 }
 
 .max2cd {
