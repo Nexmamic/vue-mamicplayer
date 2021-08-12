@@ -375,11 +375,13 @@ export default {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
+  line-height: normal;
 }
 
 a {
   display: inline;
 }
+
 .player2 {
   z-index: 2000;
   background: rgba(255, 255, 255, 0.8);
