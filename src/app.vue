@@ -190,6 +190,14 @@ export default {
         localStorage.setItem("Player_plw", plw);
       }
     },
+    dse() {
+      if (this.dse){
+        $("#player").addClass("dse");
+      }
+      else {
+        $("#player").removeClass("dse");
+      }
+    },
   },
   methods: {
     goMusic: function () {
@@ -632,10 +640,6 @@ a {
   transition: 0.8s;
   box-shadow: 0 0px 10px #5a5a5a54;
   object-fit: cover;
-}
-
-.dse.player3 .player-controls .music-imgs .img {
-  transition: unset;
 }
 
 .player3 .player-controls.active .music-imgs .img {
