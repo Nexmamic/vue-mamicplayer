@@ -220,12 +220,25 @@ export default {
   watch: {
     playlist(list) {
       if (list[this.plw]) {
-        if (this.mode != 'random') {
-          this.current = list[this.plw];
-        }
-        else {
-          this.current = this.random_list[this.plw]
-        }
+        new Promise((resolve) => {
+          var i = 0
+          while (list[i]) {
+            var random = Math.floor((Math.random() * list.length))
+            while(this.random_list.indexOf(random) != -1) {
+              random = Math.floor((Math.random() * list.length))
+            }
+            this.random_list[i] = random
+            i++
+          }
+          resolve()
+        }).then(()=>{
+          if (this.mode != 'random') {
+            this.current = list[this.plw];
+          }
+          else {
+            this.current = list[this.random_list[this.plw]]
+          }
+        })
       } else {
         this.current = {
           startTime: "00:00",
@@ -236,13 +249,6 @@ export default {
           source: "",
           highEnergy: null,
         };
-      }
-      for (var i = 0; list[i]; i++) {
-        var random = Math.floor((Math.random() * list.length))
-        while(this.random_list.indexOf(random) != -1) {
-          random = Math.floor((Math.random() * list.length))
-        }
-        this.random_list[i] = random
       }
     },
     plw(plw) {
@@ -521,12 +527,10 @@ export default {
       else if (this.mode == 'single') {
         this.mode = 'random'
         this.plw = this.random_list.indexOf(this.plw)
-        console.log(this.plw)
       }
       else if (this.mode == 'random') {
         this.mode = 'loop'
         this.plw = this.random_list[this.plw]
-        console.log(this.plw)
       }
     }
   },
