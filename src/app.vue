@@ -239,6 +239,7 @@ export default {
           background: "rgba(255, 255, 255, 0.8)",
           "background-size": "100% 100%",
         });
+        $("#img").css({ top: "0", width: "100%", height: "100%" });
         this.goNormalPage();
       } else {
         $("#player").addClass("player3");
