@@ -198,8 +198,8 @@ export default {
             var info = new Object();
             info.name = res.music_name;
             info.artist = res.music_artistname;
-            info.source = "/Music/" + res.music_id + "/" + res.file_m;
-            info.cover = "/Music/" + res.music_id + "/" + res.file_p;
+            info.source = "/Music/" + res.music_id + "/" + res.file_music;
+            info.cover = "/Music/" + res.music_id + "/" + res.file_cover;
             info.artist_url = "/Users/" + res.music_artist;
             info.music_url = "/Music/" + res.music_id;
             resolve(info);

@@ -17,6 +17,7 @@
       <div class="player-controls">
         <div class="music-imgs">
           <img
+            id="img"
             class="img"
             v-on:click="playerMax"
             v-if="current.cover"
@@ -65,11 +66,26 @@
             @mousemove="sethover"
             @mouseout="hideHover"
           >
-            <div class="slider-track"></div>
-            <div class="silderNone" :style="'width:' + 0 + '%'"></div>
-            <!-- <div id="s-hover" :style="'width:' + hoverTime + '%'"></div> -->
+            <div
+              id="highEnergy"
+              class="slider-high-energy"
+              v-show="current.highEnergy"
+              :style="
+                'left:' +
+                (realFormatFromSecond(current.highEnergy) / audio.maxTime) *
+                  100 +
+                '%'
+              "
+            ></div>
+            <div id="s-hover" :style="'width:' + hoverTime + '%'"></div>
             <div class="slider-fill" :style="'width:' + sliderTime + '%'"></div>
-            <div class="slider-thumb" :style="'left:' + thumbTime + '%'"></div>
+            <div
+              id="thumb"
+              @touchmove="onTouchMove"
+              @touchend="onTouchEnd"
+              class="slider-thumb"
+              :style="'left:' + thumbTime + '%'"
+            ></div>
           </div>
         </div>
         <div class="player-controls3">
@@ -119,13 +135,16 @@ export default {
       type: Boolean,
       default: true,
     },
+    dse: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: function () {
     return {
       plw: 0,
 
       sliderTime: 0,
-      silderNone: 0,
       hoverTime: 0,
       thumbTime: 0,
 
@@ -145,7 +164,9 @@ export default {
         name: "",
         artist: "",
         source: "",
+        highEnergy: null,
       },
+      touch: false,
     };
   },
   beforeMount() {
@@ -161,14 +182,36 @@ export default {
     setInterval(() => {
       this.$emit("updateData", this.current);
     }, 1000);
+    if (this.dse) {
+      $("#player").addClass("dse");
+    }
   },
   watch: {
     playlist(list) {
-      this.current = list[this.plw];
+      if (list[this.plw]) {
+        this.current = list[this.plw];
+      } else {
+        this.current = {
+          startTime: "00:00",
+          endtime: "00:00",
+          cover: "",
+          name: "",
+          artist: "",
+          source: "",
+          highEnergy: null,
+        };
+      }
     },
     plw(plw) {
       if (this.localplw) {
         localStorage.setItem("Player_plw", plw);
+      }
+    },
+    dse() {
+      if (this.dse) {
+        $("#player").addClass("dse");
+      } else {
+        $("#player").removeClass("dse");
       }
     },
   },
@@ -182,6 +225,12 @@ export default {
     updateData: function () {
       this.$emit("updateData", this.current);
     },
+    goPlayerPage: function () {
+      this.$emit("goPlayerPage", this.current);
+    },
+    goNormalPage: function () {
+      this.$emit("goNormalPage", this.current);
+    },
     playerMax: function () {
       if ($("#player").hasClass("player3")) {
         $("#player").addClass("player");
@@ -190,13 +239,22 @@ export default {
           background: "rgba(255, 255, 255, 0.8)",
           "background-size": "100% 100%",
         });
+        this.goNormalPage();
       } else {
         $("#player").addClass("player3");
         $("#player").removeClass("player");
-        $("#player").css({
-          background: `url('${this.current.cover}')  center center no-repeat`,
-          "background-size": "0",
-        });
+        if (!this.dse) {
+          $("#player").css({
+            background: `url('${this.current.cover}') no-repeat center center`,
+            "background-size": "0",
+          });
+        } else {
+          $("#player").css({
+            background: "rgba(175, 175, 175)",
+            "background-size": "100% 100%",
+          });
+        }
+        this.goPlayerPage();
       }
     },
     playerNarrow: function () {
@@ -220,7 +278,12 @@ export default {
     },
     nextAudio() {
       var that = this;
-      if (this.playlist.length) {
+      if (this.playlist.length > 1) {
+        $("#img").animate(
+          { top: "15%", width: "70%", height: "70%" },
+          800,
+          "swing"
+        );
         $(".player-controls").removeClass("active");
         $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
         if (this.playlist.length - 1 == this.plw) {
@@ -233,11 +296,12 @@ export default {
         this.thumbTime = 0;
         this.audio.currentTime = "00:00";
         this.play = true;
-        $(".player3").css({
-          background: `url('${this.current.cover}')  center center no-repeat`,
-          "background-size": "0",
-        });
-        that.silderNone = 0;
+        if (!this.dse) {
+          $(".player3").css({
+            background: `url('${this.current.cover}')  center center no-repeat`,
+            "background-size": "0",
+          });
+        }
         times = setInterval(() => {
           window.clearInterval(times);
           this.$refs.audio.play();
@@ -246,7 +310,12 @@ export default {
     },
     prevAudio() {
       var that = this;
-      if (this.playlist.length) {
+      if (this.playlist.length > 1) {
+        $("#img").animate(
+          { top: "15%", width: "70%", height: "70%" },
+          800,
+          "swing"
+        );
         $(".player-controls").removeClass("active");
         $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
         if (this.plw == 0) {
@@ -259,11 +328,12 @@ export default {
         this.thumbTime = 0;
         this.audio.currentTime = "00:00";
         this.play = true;
-        $(".player3").css({
-          background: `url('${this.current.cover}')  center center no-repeat`,
-          "background-size": "0",
-        });
-        that.silderNone = 0;
+        if (!this.dse) {
+          $(".player3").css({
+            background: `url('${this.current.cover}')  center center no-repeat`,
+            "background-size": "0",
+          });
+        }
         times = setInterval(() => {
           window.clearInterval(times);
           this.$refs.audio.play();
@@ -279,11 +349,21 @@ export default {
       this.$refs.audio.pause();
     },
     onPlay() {
+      $("#img").animate(
+        { top: "0", width: "100%", height: "100%" },
+        800,
+        "swing"
+      );
       this.audio.playing = true;
       $(".player-controls").addClass("active");
       $(".play-pause").attr("class", "btn play-pause icon-zanting iconfont");
     },
     onPause() {
+      $("#img").animate(
+        { top: "15%", width: "70%", height: "70%" },
+        800,
+        "swing"
+      );
       this.audio.playing = false;
       if (this.audio.currentTime >= this.audio.maxTime) {
         this.nextAudio();
@@ -295,13 +375,9 @@ export default {
       this.audio.maxTime = parseInt(res.target.duration);
     },
     onTimeUpdate(res) {
-      if (this.hoverTime == 0) {
-        this.audio.currentTime = res.target.currentTime;
-      }
-      if (this.hoverTime == 0) {
-        this.sliderTime = (res.target.currentTime / this.audio.maxTime) * 100;
-        this.thumbTime = (res.target.currentTime / this.audio.maxTime) * 100;
-      }
+      this.audio.currentTime = res.target.currentTime;
+      this.sliderTime = (res.target.currentTime / this.audio.maxTime) * 100;
+      this.thumbTime = (res.target.currentTime / this.audio.maxTime) * 100;
     },
     setValue(e) {
       const { maxTime, minTime, step } = this.audio;
@@ -326,20 +402,52 @@ export default {
       value = parseFloat(value.toFixed(5));
       this.hoverTime =
         ((e.clientX - $("#s-area").offset().left) / $("#s-area").width()) * 100;
-      this.audio.currentTime = value;
-      this.thumbTime = this.hoverTime;
-      this.sliderTime = this.hoverTime;
     },
     hideHover() {
       this.hoverTime = 0;
-      this.audio.currentTime = this.$refs.audio.currentTime;
-      this.onTimeUpdate({
-        target: { currentTime: this.$refs.audio.currentTime },
-      });
     },
     handleTouchStart(e) {
       this.setValue(e);
       this.$refs.audio.play();
+    },
+    onTouchMove(e) {
+      this.$refs.audio.pause();
+      const { maxTime, minTime, step } = this.audio;
+      let value =
+        ((e.touches[0].clientX - $("#s-area").offset().left) /
+          $("#s-area").width()) *
+        (maxTime - minTime);
+      value = Math.round(value / step) * step + minTime;
+      value = parseFloat(value.toFixed(5));
+      if (value > maxTime) {
+        value = maxTime;
+      } else if (value < minTime) {
+        value = minTime;
+      }
+      this.$refs.audio.currentTime = value;
+      this.touch = true;
+      $("#thumb").addClass("touch");
+    },
+    onTouchEnd() {
+      this.$refs.audio.play();
+      this.touch = false;
+      $("#thumb").removeClass("touch");
+    },
+    realFormatFromSecond(second) {
+      if (second) {
+        var zc = ["", "", ""];
+        var n = 0;
+        for (var i = 0; second[i]; i++) {
+          if (second[i] == ":") {
+            zc[n] = parseInt(zc[n]);
+            n++;
+          } else {
+            zc[n] += second[i];
+          }
+        }
+        var out = zc[0] * 60 + zc[1] * 1 + (zc[2] / 60) * 0.1;
+      }
+      return out;
     },
   },
   filters: {
@@ -357,11 +465,13 @@ export default {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
+  line-height: normal;
 }
 
 a {
   display: inline;
 }
+
 .player2 {
   z-index: 2000;
   background: rgba(255, 255, 255, 0.8);
@@ -391,6 +501,10 @@ a {
   overflow: hidden;
 }
 
+.dse.player {
+  box-shadow: unset;
+}
+
 .player.max {
   max-width: 100%;
   background: rgba(255, 255, 255, 0.9);
@@ -408,11 +522,15 @@ a {
   border-radius: 0;
   height: 100%;
   max-width: 100%;
-  /* background: rgba(66, 66, 66, 0.9); */
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   transition: max-width 0.8s, height 0.8s;
   overflow: hidden;
+}
+
+.dse.player3 {
+  -webkit-backdrop-filter: unset;
+  backdrop-filter: unset;
 }
 
 .player3::before {
@@ -425,14 +543,16 @@ a {
   height: 150%;
   position: fixed;
   background-image: inherit;
-  /* background: url("/img/background-dark.png") no-repeat center center; */
-  background-size: 100% 100%;
-  /* background-attachment: fixed; */
+  /*background: url("/img/background-dark.png") no-repeat center center; */
+  background-size: auto 100%;
+  /*background-attachment: fixed; */
   filter: blur(100px);
   z-index: 2001;
   transition: 0.8s;
-  /* -webkit-animation: rotateAlbumArt 50s linear 0s infinite forwards;
-    animation: rotateAlbumArt 50s linear 0s infinite forwards; */
+}
+
+.dse.player3::before {
+  filter: unset;
 }
 
 .player div {
@@ -509,12 +629,14 @@ a {
 
 @media screen and (orientation: portrait) {
   .player3 .player-controls {
-    width: 94vw;
+    width: 100%;
     padding: 7vw;
   }
   .player3 .music-imgs {
-    width: 80vw;
-    height: 80vw;
+    width: calc(84vw - 30px);
+    height: calc(84vw - 30px);
+    /*max-width: 80vw;*/
+    /*max-height: 80vw;*/
   }
 }
 
@@ -539,6 +661,7 @@ a {
   -webkit-animation: rotateAlbumArt 10s linear 0s infinite forwards;
   animation: rotateAlbumArt 10s linear 0s infinite forwards;
   animation-play-state: paused;
+  object-fit: cover;
 }
 
 .player2 .music-imgs .img {
@@ -563,20 +686,8 @@ a {
   width: 70%;
   height: 70%;
   z-index: 1000;
-  transition: 0.5s;
-  transition: 0.8s;
   box-shadow: 0 0px 10px #5a5a5a54;
-}
-
-.player3 .player-controls.active .music-imgs .img {
-  display: inline-block;
-  position: relative;
-  border-radius: 10%;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2002;
+  object-fit: cover;
 }
 
 .player-controls.active .music-imgs .img {
@@ -668,7 +779,7 @@ a {
   z-index: 100000;
   padding-left: 20px;
   padding-right: 20px;
-  transition: 0.2s;
+  transition: filter 0.8s;
   font-size: 4vh;
   z-index: 2002;
 }
@@ -684,8 +795,8 @@ a {
 }
 
 .player3 .btn:hover {
-  -webkit-filter: invert(0.1);
-  filter: invert(0.1);
+  -webkit-filter: invert(0.2);
+  filter: invert(0.2);
 }
 
 #player-content2 {
@@ -839,13 +950,13 @@ a {
   top: 0;
   bottom: 0;
   left: 0;
-  opacity: 0.2;
-  z-index: 2100 !important;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 2001 !important;
 }
 
 #ins-time,
 #s-hover {
-  background-color: #9b9b9b;
+  background-color: #cccccc;
 }
 
 #seek-bar {
@@ -855,7 +966,7 @@ a {
   bottom: 0;
   left: 0;
   width: 0;
-  background-color: rgba(250, 250, 250, 0.801);
+  background-color: rgba(250, 250, 250, 0.8);
   transition: 0.2s ease width;
 }
 
@@ -869,28 +980,6 @@ a {
   left: 60vw;
 }
 
-.silderNone {
-  background-color: rgb(231, 231, 231);
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  transition: 0.2s ease width;
-}
-
-.slider-track {
-  position: absolute;
-  top: -29px;
-  color: #fff;
-  font-size: 12px;
-  white-space: pre;
-  padding: 5px 6px;
-  border-radius: 4px;
-  display: none;
-}
-
 .slider-fill {
   content: "";
   position: absolute;
@@ -898,21 +987,39 @@ a {
   bottom: 0;
   left: 0;
   width: 0;
-  background-color: rgba(255, 255, 255, 0.733);
+  background-color: rgba(255, 255, 255, 1);
   transition: 0.2s ease width;
 }
 
 .slider-thumb {
   position: absolute;
-  width: 0.5rem;
-  top: 0.15rem;
-  /* top: 2.18px; */
-  height: 0.5rem;
+  width: 9px;
+  top: -2px;
+  height: 9px;
   background-color: rgba(255, 255, 255);
   border-radius: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0);
   cursor: pointer;
-  transition: 0.2s ease width;
+  transition: 0.8s ease width;
+}
+
+.slider-high-energy {
+  position: absolute;
+  width: 6px;
+  top: -0.5px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  transform: translate(-50%, 0);
+  cursor: pointer;
+  transition: 0.8s ease width;
+}
+
+.slider-thumb.touch {
+  width: 15px;
+  top: -5px;
+  height: 15px;
+  transform: translate(-50%, 0);
 }
 
 .max2cd {
@@ -921,7 +1028,7 @@ a {
 
 .player3 .max2cd {
   display: inline !important;
-  position: absolute;
+  position: relative;
   color: #f7f7f7;
 }
 

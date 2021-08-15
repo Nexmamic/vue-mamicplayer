@@ -10,7 +10,7 @@ module.exports = {
     path: path.resolve(__dirname, './dist'),
     filename: '[name].js',
     publicPath: '/dist/',
-    library: 'vue-MamicPlayer',
+    library: 'vue-mamicplayer',
     libraryTarget: 'umd',
     globalObject: 'this'
   },

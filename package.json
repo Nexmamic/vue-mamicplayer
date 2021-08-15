@@ -1,11 +1,10 @@
 {
   "name": "vue-mamicplayer",
-  "version": "1.0.4",
+  "version": "1.3.0",
   "description": "vue player for nexmamic",
   "main": "dist/main.js",
   "files": [
-    "dist/",
-    "public/"
+    "dist/"
   ],
   "scripts": {
     "build": "webpack --config webpack.production.config.js"
@@ -18,7 +17,8 @@
     "Nexmamic",
     "player",
     "vue",
-    "MamicPlayer"
+    "MamicPlayer",
+    "vue-mamicplayer"
   ],
   "author": "Nexmamic",
   "license": "Apache 2.0",
