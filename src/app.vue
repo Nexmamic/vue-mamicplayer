@@ -281,7 +281,7 @@ export default {
       if (this.playlist.length > 1) {
         $("#img").animate(
           { top: "15%", width: "70%", height: "70%" },
-          800,
+          500,
           "swing"
         );
         $(".player-controls").removeClass("active");
@@ -313,7 +313,7 @@ export default {
       if (this.playlist.length > 1) {
         $("#img").animate(
           { top: "15%", width: "70%", height: "70%" },
-          800,
+          500,
           "swing"
         );
         $(".player-controls").removeClass("active");
