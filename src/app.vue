@@ -110,7 +110,37 @@
           </div>
           <div
             class="btn list iconfont icon-list"
+            @click="controlList = true"
           ></div>
+        </div>
+      </div>
+    </div>
+    <div v-show="controlList" class="listControl">
+      <div
+        @click="controlList = false"
+        class="btn close iconfont icon-guanbi"
+      ></div>
+      <div class="listWindow">
+        <div @click="chooseMusic(musicinfo)" :class="is_play(musicinfo)" v-for="musicinfo in playlist">
+          <div style="display: flex;">
+            <div class="musiccover">
+              <img :src="musicinfo.cover" />
+            </div>
+            <div class="musicinfo">
+              <h1 class="musicfont">
+                {{ musicinfo.name }}
+              </h1>
+              <h2 class="musicfont">
+                {{ musicinfo.artist }}
+              </h2>
+            </div>
+          </div>
+          <div v-if="supportControlList" class="control">
+            <div
+              @click="deleteMusic(musicinfo)"
+              class="btn delete iconfont icon-shanchu"
+            ></div>
+          </div>
         </div>
       </div>
     </div>
@@ -149,6 +179,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    supportControlList: {
+      type: Boolean,
+      default: false,
+    }
   },
   data: function () {
     return {
@@ -184,6 +218,7 @@ export default {
       },
       mode: "loop",
       random_list: [],
+      controlList: false,
     };
   },
   beforeMount() {
@@ -220,6 +255,7 @@ export default {
   watch: {
     playlist(list) {
       if (list[this.plw]) {
+        this.random_list = []
         new Promise((resolve) => {
           var i = 0
           while (list[i]) {
@@ -366,6 +402,7 @@ export default {
           window.clearInterval(times);
           this.$refs.audio.play();
         }, 1000);
+        this.goPlayerPage()
       }
     },
     prevAudio() {
@@ -404,6 +441,7 @@ export default {
           this.$refs.audio.play();
         }, 1000);
         this.$refs.audio.play();
+        this.goPlayerPage()
       }
     },
     playaudio() {
@@ -532,6 +570,90 @@ export default {
         this.mode = 'loop'
         this.plw = this.random_list[this.plw]
       }
+    },
+    deleteMusic(info) {
+      for (var i = 0; this.playlist[i]; i++) {
+        if (this.playlist[i] == info) {
+          this.$emit("deleteMusic", i);
+          break;
+        }
+      }
+    },
+    is_play(info) {
+      if (this.mode != 'random' && info == this.playlist[this.plw]) {
+        return 'card play'
+      }
+      else if(this.mode == 'random' && info == this.playlist[this.random_list[this.plw]]){
+        return 'card play'
+      }
+      else {
+        return 'card'
+      }
+    },
+    chooseMusic(info) {
+      if (this.mode != 'random') {
+        for (var i = 0; this.playlist[i]; i++) {
+          if (info == this.playlist[i]) {
+            $("#img").animate(
+              { top: "15%", width: "70%", height: "70%" },
+              500,
+              "swing"
+            );
+            $(".player-controls").removeClass("active");
+            $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
+            this.plw = i;
+            this.current = this.playlist[i];
+            this.updateData();
+            this.sliderTime = 0;
+            this.thumbTime = 0;
+            this.audio.currentTime = "00:00";
+            this.play = true;
+            if (!this.dse) {
+              $(".player3").css({
+                background: `url('${this.current.cover}')  center center no-repeat`,
+                "background-size": "0",
+              });
+            }
+            times = setInterval(() => {
+              window.clearInterval(times);
+              this.$refs.audio.play();
+            }, 1000);
+            this.$refs.audio.play();
+          }
+        }
+      }
+      else if(this.mode == 'random'){
+        for (var i = 0; this.playlist[this.random_list[i]]; i++) {
+          if (info == this.playlist[this.random_list[i]]) {
+            $("#img").animate(
+              { top: "15%", width: "70%", height: "70%" },
+              500,
+              "swing"
+            );
+            $(".player-controls").removeClass("active");
+            $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
+            this.plw = i;
+            this.current = this.playlist[this.random_list[i]];
+            this.updateData();
+            this.sliderTime = 0;
+            this.thumbTime = 0;
+            this.audio.currentTime = "00:00";
+            this.play = true;
+            if (!this.dse) {
+              $(".player3").css({
+                background: `url('${this.current.cover}')  center center no-repeat`,
+                "background-size": "0",
+              });
+            }
+            times = setInterval(() => {
+              window.clearInterval(times);
+              this.$refs.audio.play();
+            }, 1000);
+            this.$refs.audio.play();
+          }
+        }
+      }
+      this.goPlayerPage()
     }
   },
   filters: {
@@ -1129,11 +1251,143 @@ a {
   display: none;
 }
 
+.listControl {
+  padding: 5vh calc(50vw - 300px);
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(100, 100, 100, 0.8);
+  z-index: 3000;
+}
+
+.listControl .listWindow {
+  padding: 32px 16px;
+  border-radius: 24px;
+  background-color: rgba(50, 50, 50, 0.8);
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.listControl .close {
+  position: absolute;
+  padding: 4px;
+  border-radius: 50%;
+  font-size: 32px;
+  color: #AAA;
+  transition: .8s;
+}
+
+.listControl .close:hover {
+  transform: rotate(180deg);
+}
+
+.card {
+  position: relative;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 16px;
+  width: calc(100% - 32px);
+  margin: 4px 16px;
+  display: inline-flex;
+  height: auto;
+  line-height: normal;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  background-color: rgba(100, 100, 100, 0);
+  transition: .4s;
+}
+
+.card:hover {
+  background-color: rgba(100, 100, 100, 0.4);
+}
+
+.card.play {
+  background-color: rgba(100, 100, 100, 0.8);
+}
+
+.card.play:hover{
+  background-color: rgba(100, 100, 100, 1);
+}
+
+.card .musiccover {
+  height: 86px;
+  width: 86px;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  border-radius: 10px;
+  z-index: 1;
+}
+
+.card .musiccover img {
+  height: 86px;
+  width: 86px;
+  position: relative;
+  display: inline-block;
+  object-fit: cover;
+  -webkit-filter: brightness(100%);
+  filter: brightness(100%);
+  transition: all 0.5s;
+  transform: scale(1);
+}
+
+.card .musiccover:hover img {
+  -webkit-filter: brightness(90%);
+  filter: brightness(90%);
+  transform: scale(1.05);
+}
+.card .musicinfo {
+  display: inline-grid !important;
+  position: relative;
+  width: 256px;
+  height: 86px;
+  right: 0;
+  top: 0;
+  padding: 0px 0;
+  padding-top: 14px;
+  padding-right: 20px;
+  overflow: hidden;
+  line-height: 21px;
+}
+
+.card .musicinfo .musicfont {
+  margin-left: 10px;
+  margin-top: 0px;
+}
+
+.card .musicinfo h1 {
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: 0.5s;
+}
+
+.card .musicinfo h2 {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: 0.5s;
+}
+
+.card .control .delete {
+  font-size: 26px;
+  transition: .5s;
+}
+
+.card .control .delete:hover {
+  font-size: 32px;
+}
+
 @font-face {
   font-family: "iconfont"; /* Project id 2293529 */
-  src: url('//at.alicdn.com/t/font_2293529_d0yf2d8oxo.woff2?t=1629018034235') format('woff2'),
-       url('//at.alicdn.com/t/font_2293529_d0yf2d8oxo.woff?t=1629018034235') format('woff'),
-       url('//at.alicdn.com/t/font_2293529_d0yf2d8oxo.ttf?t=1629018034235') format('truetype');
+  src: url('//at.alicdn.com/t/font_2293529_gmfotqd4kiu.woff2?t=1629035214364') format('woff2'),
+       url('//at.alicdn.com/t/font_2293529_gmfotqd4kiu.woff?t=1629035214364') format('woff'),
+       url('//at.alicdn.com/t/font_2293529_gmfotqd4kiu.ttf?t=1629035214364') format('truetype');
 }
 
 .iconfont {
@@ -1142,6 +1396,10 @@ a {
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-guanbi:before {
+  content: "\e630";
 }
 
 .icon-suiji:before {
@@ -1343,5 +1601,6 @@ a {
 .icon-info:before {
   content: "\e62d";
 }
+
 
 </style>
