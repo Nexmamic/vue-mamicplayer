@@ -416,7 +416,7 @@ export default {
     onPlay() {
       $("#img").animate(
         { top: "0", width: "100%", height: "100%" },
-        800,
+        500,
         "swing"
       );
       this.audio.playing = true;
@@ -426,7 +426,7 @@ export default {
     onPause() {
       $("#img").animate(
         { top: "15%", width: "70%", height: "70%" },
-        800,
+        500,
         "swing"
       );
       this.audio.playing = false;
