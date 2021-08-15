@@ -535,20 +535,18 @@ a {
 
 .player3::before {
   content: "";
-  top: -25%;
-  left: -25%;
-  right: 0;
+  left: 0;
   bottom: 0;
-  width: 150%;
-  height: 150%;
+  max-width: inherit;
+  width: 100%;
+  height: inherit;
   position: fixed;
   background-image: inherit;
-  /*background: url("/img/background-dark.png") no-repeat center center; */
-  background-size: auto 100%;
+  background-size: 100% 100%;
   /*background-attachment: fixed; */
   filter: blur(100px);
   z-index: 2001;
-  transition: 0.8s;
+  /* transition: 0.8s; */
 }
 
 .dse.player3::before {
@@ -795,8 +793,8 @@ a {
 }
 
 .player3 .btn:hover {
-  -webkit-filter: invert(0.2);
-  filter: invert(0.2);
+  -webkit-filter: invert(0.1);
+  filter: invert(0.1);
 }
 
 #player-content2 {
