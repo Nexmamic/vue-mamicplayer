@@ -17,6 +17,7 @@
       <div class="player-controls">
         <div class="music-imgs">
           <img
+            id="img"
             class="img"
             v-on:click="playerMax"
             v-if="current.cover"
@@ -65,23 +66,50 @@
             @mousemove="sethover"
             @mouseout="hideHover"
           >
+            <div
+              id="highEnergy"
+              class="slider-high-energy"
+              v-show="current.highEnergy"
+              :style="
+                'left:' +
+                (realFormatFromSecond(current.highEnergy) / audio.maxTime) *
+                  100 +
+                '%'
+              "
+            ></div>
             <div id="s-hover" :style="'width:' + hoverTime + '%'"></div>
             <div class="slider-fill" :style="'width:' + sliderTime + '%'"></div>
-            <div id="thumb" @touchmove="onTouchMove" @touchend="onTouchEnd" class="slider-thumb" :style="'left:' + thumbTime + '%'"></div>
+            <div
+              id="thumb"
+              @touchmove="onTouchMove"
+              @touchend="onTouchEnd"
+              class="slider-thumb"
+              :style="'left:' + thumbTime + '%'"
+            ></div>
           </div>
         </div>
         <div class="player-controls3">
           <div
-            class="btn prev iconfont icon-diyigeshipin"
-            @click="prevAudio"
+            @click="changeMode" 
+            id='player_mode'
+            class="btn mode iconfont"
           ></div>
+          <div>
+            <div
+              class="btn prev iconfont icon-diyigeshipin"
+              @click="prevAudio"
+            ></div>
+            <div
+              class="btn play-pause iconfont icon-kaishi"
+              @click="startPlayOrPause"
+            ></div>
+            <div
+              class="btn next iconfont icon-zuihouyigeshipin"
+              @click="nextAudio"
+            ></div>
+          </div>
           <div
-            class="btn play-pause iconfont icon-kaishi"
-            @click="startPlayOrPause"
-          ></div>
-          <div
-            class="btn next iconfont icon-zuihouyigeshipin"
-            @click="nextAudio"
+            class="btn list iconfont icon-list"
           ></div>
         </div>
       </div>
@@ -146,8 +174,16 @@ export default {
         name: "",
         artist: "",
         source: "",
+        highEnergy: null,
       },
       touch: false,
+      mode_icon: {
+        "loop": "icon-xunhuan",
+        "single": "icon-danquxunhuan",
+        "random": "icon-suiji"
+      },
+      mode: "loop",
+      random_list: [],
     };
   },
   beforeMount() {
@@ -158,30 +194,55 @@ export default {
   },
   mounted() {
     if (this.localplw) {
-      this.plw = localStorage.getItem("Player_plw");
+      this.plw = parseInt(localStorage.getItem("Player_plw"));
     }
     setInterval(() => {
       this.$emit("updateData", this.current);
     }, 1000);
-    if (this.dse){
+    if (this.dse) {
       $("#player").addClass("dse");
+    }
+    var mode = ['single', 'loop', 'random']
+    if (localStorage.getItem("Player_mode")) {
+      if (mode.indexOf(localStorage.getItem("Player_mode")) != -1){
+        $("#player_mode").addClass(this.mode_icon[localStorage.getItem("Player_mode")]);
+        this.mode = localStorage.getItem("Player_mode")
+      }
+      else {
+        localStorage.setItem("Player_mode", 'loop');
+        $("#player_mode").addClass('icon-xunhuan');
+      }
+    } else {
+      localStorage.setItem("Player_mode", 'loop');
+      $("#player_mode").addClass('icon-xunhuan');
     }
   },
   watch: {
     playlist(list) {
-      if(list[this.plw]){
-        this.current = list[this.plw];
-      }
-      else {
-        this.current = 
-        {
+      if (list[this.plw]) {
+        if (this.mode != 'random') {
+          this.current = list[this.plw];
+        }
+        else {
+          this.current = this.random_list[this.plw]
+        }
+      } else {
+        this.current = {
           startTime: "00:00",
           endtime: "00:00",
           cover: "",
           name: "",
           artist: "",
           source: "",
+          highEnergy: null,
         };
+      }
+      for (var i = 0; list[i]; i++) {
+        var random = Math.floor((Math.random() * list.length))
+        while(this.random_list.indexOf(random) != -1) {
+          random = Math.floor((Math.random() * list.length))
+        }
+        this.random_list[i] = random
       }
     },
     plw(plw) {
@@ -190,13 +251,17 @@ export default {
       }
     },
     dse() {
-      if (this.dse){
+      if (this.dse) {
         $("#player").addClass("dse");
-      }
-      else {
+      } else {
         $("#player").removeClass("dse");
       }
     },
+    mode(n, l) {
+      $("#player_mode").removeClass(this.mode_icon[l]);
+      $("#player_mode").addClass(this.mode_icon[n]);
+      localStorage.setItem('Player_mode', this.mode)
+    }
   },
   methods: {
     goMusic: function () {
@@ -222,19 +287,19 @@ export default {
           background: "rgba(255, 255, 255, 0.8)",
           "background-size": "100% 100%",
         });
+        $("#img").css({ top: "0", width: "100%", height: "100%" });
         this.goNormalPage();
       } else {
         $("#player").addClass("player3");
         $("#player").removeClass("player");
-        if (!this.dse){
+        if (!this.dse) {
           $("#player").css({
-            background: `url('${this.current.cover}')  center center no-repeat`,
+            background: `url('${this.current.cover}') no-repeat center center`,
             "background-size": "0",
           });
-        }
-        else {
+        } else {
           $("#player").css({
-            background: "rgba(175, 175, 175)",
+            background: "rgba(150, 150, 150)",
             "background-size": "100% 100%",
           });
         }
@@ -263,19 +328,29 @@ export default {
     nextAudio() {
       var that = this;
       if (this.playlist.length > 1) {
+        $("#img").animate(
+          { top: "15%", width: "70%", height: "70%" },
+          500,
+          "swing"
+        );
         $(".player-controls").removeClass("active");
         $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
         if (this.playlist.length - 1 == this.plw) {
           this.plw = -1;
         }
         this.plw++;
-        this.current = this.playlist[this.plw];
+        if (this.mode != 'random') {
+          this.current = this.playlist[this.plw];
+        }
+        else {
+          this.current = this.playlist[this.random_list[this.plw]];
+        }
         this.updateData();
         this.sliderTime = 0;
         this.thumbTime = 0;
         this.audio.currentTime = "00:00";
         this.play = true;
-        if (!this.dse){
+        if (!this.dse) {
           $(".player3").css({
             background: `url('${this.current.cover}')  center center no-repeat`,
             "background-size": "0",
@@ -290,19 +365,29 @@ export default {
     prevAudio() {
       var that = this;
       if (this.playlist.length > 1) {
+        $("#img").animate(
+          { top: "15%", width: "70%", height: "70%" },
+          500,
+          "swing"
+        );
         $(".player-controls").removeClass("active");
         $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
         if (this.plw == 0) {
           this.plw = this.playlist.length;
         }
         this.plw--;
-        this.current = this.playlist[this.plw];
+        if (this.mode != 'random') {
+          this.current = this.playlist[this.plw];
+        }
+        else {
+          this.current = this.playlist[this.random_list[this.plw]];
+        }
         this.updateData();
         this.sliderTime = 0;
         this.thumbTime = 0;
         this.audio.currentTime = "00:00";
         this.play = true;
-        if (!this.dse){
+        if (!this.dse) {
           $(".player3").css({
             background: `url('${this.current.cover}')  center center no-repeat`,
             "background-size": "0",
@@ -323,14 +408,30 @@ export default {
       this.$refs.audio.pause();
     },
     onPlay() {
+      $("#img").animate(
+        { top: "0", width: "100%", height: "100%" },
+        800,
+        "swing"
+      );
       this.audio.playing = true;
       $(".player-controls").addClass("active");
       $(".play-pause").attr("class", "btn play-pause icon-zanting iconfont");
     },
     onPause() {
+      $("#img").animate(
+        { top: "15%", width: "70%", height: "70%" },
+        800,
+        "swing"
+      );
       this.audio.playing = false;
       if (this.audio.currentTime >= this.audio.maxTime) {
-        this.nextAudio();
+        if (this.mode != 'single') {
+          this.nextAudio();
+        }
+        else {
+          this.$refs.audio.currentTime = 0;
+          this.$refs.audio.play();
+        }
       }
       $(".player-controls").removeClass("active");
       $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
@@ -378,7 +479,8 @@ export default {
       this.$refs.audio.pause();
       const { maxTime, minTime, step } = this.audio;
       let value =
-        ((e.touches[0].clientX - $("#s-area").offset().left) / $("#s-area").width()) *
+        ((e.touches[0].clientX - $("#s-area").offset().left) /
+          $("#s-area").width()) *
         (maxTime - minTime);
       value = Math.round(value / step) * step + minTime;
       value = parseFloat(value.toFixed(5));
@@ -388,13 +490,44 @@ export default {
         value = minTime;
       }
       this.$refs.audio.currentTime = value;
-      this.touch = true
+      this.touch = true;
       $("#thumb").addClass("touch");
     },
     onTouchEnd() {
       this.$refs.audio.play();
-      this.touch = false
+      this.touch = false;
       $("#thumb").removeClass("touch");
+    },
+    realFormatFromSecond(second) {
+      if (second) {
+        var zc = ["", "", ""];
+        var n = 0;
+        for (var i = 0; second[i]; i++) {
+          if (second[i] == ":") {
+            zc[n] = parseInt(zc[n]);
+            n++;
+          } else {
+            zc[n] += second[i];
+          }
+        }
+        var out = zc[0] * 60 + zc[1] * 1 + (zc[2] / 60) * 0.1;
+      }
+      return out;
+    },
+    changeMode() {
+      if (this.mode == 'loop'){
+        this.mode = 'single'
+      }
+      else if (this.mode == 'single') {
+        this.mode = 'random'
+        this.plw = this.random_list.indexOf(this.plw)
+        console.log(this.plw)
+      }
+      else if (this.mode == 'random') {
+        this.mode = 'loop'
+        this.plw = this.random_list[this.plw]
+        console.log(this.plw)
+      }
     }
   },
   filters: {
@@ -475,27 +608,25 @@ a {
   overflow: hidden;
 }
 
-.dse.player3{
+.dse.player3 {
   -webkit-backdrop-filter: unset;
   backdrop-filter: unset;
 }
 
 .player3::before {
   content: "";
-  top: -25%;
-  left: -25%;
-  right: 0;
+  left: 0;
   bottom: 0;
-  width: 150%;
-  height: 150%;
+  max-width: inherit;
+  width: 100%;
+  height: inherit;
   position: fixed;
   background-image: inherit;
-  /*background: url("/img/background-dark.png") no-repeat center center; */
-  background-size: auto 100%;
+  background-size: 100% 100%;
   /*background-attachment: fixed; */
   filter: blur(100px);
   z-index: 2001;
-  transition: 0.8s;
+  /* transition: 0.8s; */
 }
 
 .dse.player3::before {
@@ -633,17 +764,8 @@ a {
   width: 70%;
   height: 70%;
   z-index: 1000;
-  transition: 0.8s;
   box-shadow: 0 0px 10px #5a5a5a54;
   object-fit: cover;
-}
-
-.player3 .player-controls.active .music-imgs .img {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2002;
 }
 
 .player-controls.active .music-imgs .img {
@@ -701,12 +823,14 @@ a {
 .player3 .player-controls3 {
   position: relative;
   margin-left: 0;
-  display: block;
+  display: flex;
   white-space: nowrap;
   text-align: center;
   margin-top: 30px;
   transition: 0.8s;
   z-index: 2002;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .player3 .player-controls3 * {
@@ -714,6 +838,7 @@ a {
   white-space: nowrap;
   z-index: 2002;
   color: #ffffff;
+  align-items: center;
 }
 
 .player .btn {
@@ -751,8 +876,12 @@ a {
 }
 
 .player3 .btn:hover {
-  -webkit-filter: invert(0.2);
-  filter: invert(0.2);
+  -webkit-filter: invert(0.1);
+  filter: invert(0.1);
+}
+
+.btn.mode,.btn.list {
+  font-size: 26px;
 }
 
 #player-content2 {
@@ -907,12 +1036,12 @@ a {
   bottom: 0;
   left: 0;
   background-color: rgba(255, 255, 255, 0.7);
-  z-index: 2001!important;
+  z-index: 2001 !important;
 }
 
 #ins-time,
 #s-hover {
-  background-color: #9b9b9b;
+  background-color: #cccccc;
 }
 
 #seek-bar {
@@ -943,14 +1072,14 @@ a {
   bottom: 0;
   left: 0;
   width: 0;
-  background-color: rgba(255, 255, 255, 0.733);
+  background-color: rgba(255, 255, 255, 1);
   transition: 0.2s ease width;
 }
 
 .slider-thumb {
   position: absolute;
   width: 9px;
-  top: -2px; 
+  top: -2px;
   height: 9px;
   background-color: rgba(255, 255, 255);
   border-radius: 50%;
@@ -959,9 +1088,21 @@ a {
   transition: 0.8s ease width;
 }
 
+.slider-high-energy {
+  position: absolute;
+  width: 6px;
+  top: -0.5px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  transform: translate(-50%, 0);
+  cursor: pointer;
+  transition: 0.8s ease width;
+}
+
 .slider-thumb.touch {
   width: 15px;
-  top: -5px; 
+  top: -5px;
   height: 15px;
   transform: translate(-50%, 0);
 }
@@ -983,21 +1124,12 @@ a {
 .player3 .max2d {
   display: none;
 }
+
 @font-face {
-  font-family: "iconfont";
-  src: url("//at.alicdn.com/t/font_2293529_hsibd11944.eot?t=1616507953830"); /* IE9 */
-  src: url("//at.alicdn.com/t/font_2293529_hsibd11944.eot?t=1616507953830#iefix")
-      format("embedded-opentype"),
-    /* IE6-IE8 */
-      url("data:application/x-font-woff2;charset=utf-8;base64,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")
-      format("woff2"),
-    url("//at.alicdn.com/t/font_2293529_hsibd11944.woff?t=1616507953830")
-      format("woff"),
-    url("//at.alicdn.com/t/font_2293529_hsibd11944.ttf?t=1616507953830")
-      format("truetype"),
-    /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
-      url("//at.alicdn.com/t/font_2293529_hsibd11944.svg?t=1616507953830#iconfont")
-      format("svg"); /* iOS 4.1- */
+  font-family: "iconfont"; /* Project id 2293529 */
+  src: url('//at.alicdn.com/t/font_2293529_d0yf2d8oxo.woff2?t=1629018034235') format('woff2'),
+       url('//at.alicdn.com/t/font_2293529_d0yf2d8oxo.woff?t=1629018034235') format('woff'),
+       url('//at.alicdn.com/t/font_2293529_d0yf2d8oxo.ttf?t=1629018034235') format('truetype');
 }
 
 .iconfont {
@@ -1006,6 +1138,122 @@ a {
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-suiji:before {
+  content: "\e7b8";
+}
+
+.icon-xunhuan:before {
+  content: "\e68e";
+}
+
+.icon-danquxunhuan:before {
+  content: "\e6a2";
+}
+
+.icon-bianji1:before {
+  content: "\e89a";
+}
+
+.icon-fangda:before {
+  content: "\e89b";
+}
+
+.icon-dianzan:before {
+  content: "\e89c";
+}
+
+.icon-jubao:before {
+  content: "\e89d";
+}
+
+.icon-lianjie:before {
+  content: "\e89e";
+}
+
+.icon-shuoming:before {
+  content: "\e89f";
+}
+
+.icon-shoucang:before {
+  content: "\e8a0";
+}
+
+.icon-liaotian:before {
+  content: "\e8a1";
+}
+
+.icon-sousuo:before {
+  content: "\e8a2";
+}
+
+.icon-suoxiao1:before {
+  content: "\e8a3";
+}
+
+.icon-wenjianjia:before {
+  content: "\e8a4";
+}
+
+.icon-shezhi:before {
+  content: "\e8a5";
+}
+
+.icon-yinle:before {
+  content: "\e8a6";
+}
+
+.icon-zhuanfa:before {
+  content: "\e8a7";
+}
+
+.icon-zhuye:before {
+  content: "\e8a8";
+}
+
+.icon-wenjianheimingdan:before {
+  content: "\e8a9";
+}
+
+.icon-wenjianyinle:before {
+  content: "\e8aa";
+}
+
+.icon-wenjianshoucang:before {
+  content: "\e8ab";
+}
+
+.icon-wenjian:before {
+  content: "\e8ac";
+}
+
+.icon-wenjianshangchuan:before {
+  content: "\e8ad";
+}
+
+.icon-yunshangchuan:before {
+  content: "\e8ae";
+}
+
+.icon-yunyinle:before {
+  content: "\e8af";
+}
+
+.icon-yunshuaxin:before {
+  content: "\e8b0";
+}
+
+.icon-yun:before {
+  content: "\e8b1";
+}
+
+.icon-list1:before {
+  content: "\e615";
+}
+
+.icon-GitHub:before {
+  content: "\e601";
 }
 
 .icon-spotify:before {
@@ -1032,14 +1280,6 @@ a {
   content: "\e7d6";
 }
 
-.icon-maximise:before {
-  content: "\e65d";
-}
-
-.icon-fangdazhanshi:before {
-  content: "\e60c";
-}
-
 .icon-shanchu:before {
   content: "\e60b";
 }
@@ -1064,10 +1304,6 @@ a {
   content: "\e612";
 }
 
-.icon-bianji:before {
-  content: "\e61b";
-}
-
 .icon-wangye-loading:before {
   content: "\e62e";
 }
@@ -1088,47 +1324,20 @@ a {
   content: "\e6e3";
 }
 
-.icon-setting:before {
-  content: "\e605";
-}
-
-.icon-good:before {
-  content: "\e62a";
-}
-
-.icon-good1:before {
-  content: "\e6f7";
-}
-
 .icon-log-out:before {
   content: "\e64a";
-}
-
-.icon-star:before {
-  content: "\e60f";
 }
 
 .icon-find:before {
   content: "\e602";
 }
 
-.icon-write:before {
-  content: "\e600";
-}
-
 .icon-avatar:before {
   content: "\e6a7";
-}
-
-.icon-share:before {
-  content: "\e67a";
 }
 
 .icon-info:before {
   content: "\e62d";
 }
 
-.icon-upload:before {
-  content: "\e84c";
-}
 </style>
