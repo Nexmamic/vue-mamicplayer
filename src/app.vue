@@ -591,69 +591,73 @@ export default {
       }
     },
     chooseMusic(info) {
-      if (this.mode != 'random') {
-        for (var i = 0; this.playlist[i]; i++) {
-          if (info == this.playlist[i]) {
-            $("#img").animate(
-              { top: "15%", width: "70%", height: "70%" },
-              500,
-              "swing"
-            );
-            $(".player-controls").removeClass("active");
-            $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
-            this.plw = i;
-            this.current = this.playlist[i];
-            this.updateData();
-            this.sliderTime = 0;
-            this.thumbTime = 0;
-            this.audio.currentTime = "00:00";
-            this.play = true;
-            if (!this.dse) {
-              $(".player3").css({
-                background: `url('${this.current.cover}')  center center no-repeat`,
-                "background-size": "0",
-              });
-            }
-            times = setInterval(() => {
-              window.clearInterval(times);
+      if (this.is_play(info) == 'card') {
+        if (this.mode != 'random') {
+          for (var i = 0; this.playlist[i]; i++) {
+            if (info == this.playlist[i]) {
+              $("#img").animate(
+                { top: "15%", width: "70%", height: "70%" },
+                500,
+                "swing"
+              );
+              $(".player-controls").removeClass("active");
+              $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
+              this.plw = i;
+              this.current = this.playlist[i];
+              this.updateData();
+              this.sliderTime = 0;
+              this.thumbTime = 0;
+              this.audio.currentTime = "00:00";
+              this.play = true;
+              if (!this.dse) {
+                $(".player3").css({
+                  background: `url('${this.current.cover}')  center center no-repeat`,
+                  "background-size": "0",
+                });
+              }
+              times = setInterval(() => {
+                window.clearInterval(times);
+                this.$refs.audio.play();
+              }, 1000);
               this.$refs.audio.play();
-            }, 1000);
-            this.$refs.audio.play();
+              break
+            }
           }
         }
-      }
-      else if(this.mode == 'random'){
-        for (var i = 0; this.playlist[this.random_list[i]]; i++) {
-          if (info == this.playlist[this.random_list[i]]) {
-            $("#img").animate(
-              { top: "15%", width: "70%", height: "70%" },
-              500,
-              "swing"
-            );
-            $(".player-controls").removeClass("active");
-            $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
-            this.plw = i;
-            this.current = this.playlist[this.random_list[i]];
-            this.updateData();
-            this.sliderTime = 0;
-            this.thumbTime = 0;
-            this.audio.currentTime = "00:00";
-            this.play = true;
-            if (!this.dse) {
-              $(".player3").css({
-                background: `url('${this.current.cover}')  center center no-repeat`,
-                "background-size": "0",
-              });
-            }
-            times = setInterval(() => {
-              window.clearInterval(times);
+        else if(this.mode == 'random'){
+          for (var i = 0; this.playlist[this.random_list[i]]; i++) {
+            if (info == this.playlist[this.random_list[i]]) {
+              $("#img").animate(
+                { top: "15%", width: "70%", height: "70%" },
+                500,
+                "swing"
+              );
+              $(".player-controls").removeClass("active");
+              $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
+              this.plw = i;
+              this.current = this.playlist[this.random_list[i]];
+              this.updateData();
+              this.sliderTime = 0;
+              this.thumbTime = 0;
+              this.audio.currentTime = "00:00";
+              this.play = true;
+              if (!this.dse) {
+                $(".player3").css({
+                  background: `url('${this.current.cover}')  center center no-repeat`,
+                  "background-size": "0",
+                });
+              }
+              times = setInterval(() => {
+                window.clearInterval(times);
+                this.$refs.audio.play();
+              }, 1000);
               this.$refs.audio.play();
-            }, 1000);
-            this.$refs.audio.play();
+              break
+            }
           }
         }
+        this.goPlayerPage()
       }
-      this.goPlayerPage()
     }
   },
   filters: {
@@ -984,11 +988,17 @@ a {
 
 .player3 .btn {
   z-index: 100000;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding: 0 20px;
   transition: filter 0.8s;
   font-size: 4vh;
   z-index: 2002;
+}
+
+
+@media screen and (orientation: portrait) {
+  .player3 .btn {
+    padding: 0 10px;
+  }
 }
 
 .player .btn:hover {
@@ -1344,7 +1354,8 @@ a {
 .card .musicinfo {
   display: inline-grid !important;
   position: relative;
-  width: 256px;
+  width: auto;
+  max-width: 256px;
   height: 86px;
   right: 0;
   top: 0;
