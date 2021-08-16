@@ -11,13 +11,7 @@
 MamicPlayer是Nexmamic的悬浮播放器  
 他有全屏和悬浮两种模式
 
-([Nexmamic](https://www.nexmamic.com) 是中国的音乐创作分享平台)
-
-### Features
-
-- 歌词
-- 更好看的UI
-- 自定义UI
+([Nexmamic](https://www.nexmamic.com) 是国内一个音乐创作分享平台)
 
 让我们来看看吧:
 

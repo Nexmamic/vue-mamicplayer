@@ -13,12 +13,6 @@ It has two modes, full screen and floating
 
 ([Nexmamic](https://www.nexmamic.com) is a music creation sharing platform in China)
 
-### Features
-
-- Lyrics
-- Other UI
-- Custom UI
-
 Let's have a look:
 
 ![](public/player.png)
