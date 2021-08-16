@@ -412,11 +412,13 @@ export default {
     nextAudio() {
       var that = this;
       if (this.playlist.length > 1) {
-        $("#img").animate(
-          { top: "15%", width: "70%", height: "70%" },
-          500,
-          "swing"
-        );
+        if (this.max) {
+          $("#img").animate(
+            { top: "15%", width: "70%", height: "70%" },
+            500,
+            "swing"
+          );
+        }
         $(".player-controls").removeClass("active");
         $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
         if (this.playlist.length - 1 == this.plw) {
@@ -444,17 +446,21 @@ export default {
           window.clearInterval(times);
           this.$refs.audio.play();
         }, 1000);
-        this.goPlayerPage();
+        if (this.max) {
+          this.goPlayerPage();
+        }
       }
     },
     prevAudio() {
       var that = this;
       if (this.playlist.length > 1) {
-        $("#img").animate(
-          { top: "15%", width: "70%", height: "70%" },
-          500,
-          "swing"
-        );
+        if (this.max) {
+          $("#img").animate(
+            { top: "15%", width: "70%", height: "70%" },
+            500,
+            "swing"
+          );
+        }
         $(".player-controls").removeClass("active");
         $(".play-pause").attr("class", "btn play-pause icon-kaishi iconfont");
         if (this.plw == 0) {
@@ -483,7 +489,9 @@ export default {
           this.$refs.audio.play();
         }, 1000);
         this.$refs.audio.play();
-        this.goPlayerPage();
+        if (this.max) {
+          this.goPlayerPage();
+        }
       }
     },
     playaudio() {
@@ -494,21 +502,25 @@ export default {
       this.$refs.audio.pause();
     },
     onPlay() {
-      $("#img").animate(
-        { top: "0", width: "100%", height: "100%" },
-        500,
-        "swing"
-      );
+      if (this.max) {
+        $("#img").animate(
+          { top: "0", width: "100%", height: "100%" },
+          500,
+          "swing"
+        );
+      }
       this.audio.playing = true;
       $(".player-controls").addClass("active");
       $(".play-pause").attr("class", "btn play-pause icon-zanting iconfont");
     },
     onPause() {
-      $("#img").animate(
-        { top: "15%", width: "70%", height: "70%" },
-        500,
-        "swing"
-      );
+      if (this.max) {
+        $("#img").animate(
+          { top: "15%", width: "70%", height: "70%" },
+          500,
+          "swing"
+        );
+      }
       this.audio.playing = false;
       if (this.audio.currentTime >= this.audio.maxTime) {
         if (this.mode != "single") {
@@ -637,11 +649,13 @@ export default {
         if (this.mode != "random") {
           for (var i = 0; this.playlist[i]; i++) {
             if (info == this.playlist[i]) {
-              $("#img").animate(
-                { top: "15%", width: "70%", height: "70%" },
-                500,
-                "swing"
-              );
+              if (this.max) {
+                $("#img").animate(
+                  { top: "15%", width: "70%", height: "70%" },
+                  500,
+                  "swing"
+                );
+              }
               $(".player-controls").removeClass("active");
               $(".play-pause").attr(
                 "class",
@@ -666,22 +680,27 @@ export default {
                 this.$refs.audio.play();
               }, 1000);
               this.$refs.audio.play();
+              if (this.max) {
+                this.goPlayerPage();
+              }
               break;
             }
           }
         } else if (this.mode == "random") {
           for (var i = 0; this.playlist[this.random_list[i]]; i++) {
             if (info == this.playlist[this.random_list[i]]) {
-              $("#img").animate(
-                { top: "15%", width: "70%", height: "70%" },
-                500,
-                "swing"
-              );
-              $(".player-controls").removeClass("active");
-              $(".play-pause").attr(
-                "class",
-                "btn play-pause icon-kaishi iconfont"
-              );
+              if (this.max) {
+                $("#img").animate(
+                  { top: "15%", width: "70%", height: "70%" },
+                  500,
+                  "swing"
+                );
+                $(".player-controls").removeClass("active");
+                $(".play-pause").attr(
+                  "class",
+                  "btn play-pause icon-kaishi iconfont"
+                );
+              }
               this.plw = i;
               this.current = this.playlist[this.random_list[i]];
               this.updateData();
@@ -701,6 +720,9 @@ export default {
                 this.$refs.audio.play();
               }, 1000);
               this.$refs.audio.play();
+              if (this.max) {
+                this.goPlayerPage();
+              }
               break;
             }
           }
