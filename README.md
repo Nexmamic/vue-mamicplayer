@@ -102,19 +102,23 @@ Once installed, update your `nuxt.config.js` file to include the Vuetify module 
 
 parameter:
 
-| Name         | type    | default | description                                         |
-| ------------ | ------- | ------- | --------------------------------------------------- |
-| defaultCover | String  |         | If the playlist is empty, display this picture      |
-| playlist     | Array   |         | playlist                                            |
-| localplw     | Boolean | true    | Whether to save the music to be played localStorage |
+| Name               | type    | default                  | description                                                                           |
+| ------------------ | ------- | ------------------------ | ------------------------------------------------------------------------------------- |
+| defaultCover       | String  |                          | If the playlist is empty, display this picture                                        |
+| playlist           | Array   |                          | playlist                                                                              |
+| localplw           | Boolean | true                     | Whether to save the music to be played localStorage                                   |
+| dse                | Boolean | false                    | Disable background effects?                                                           |
+| supportControlList | Boolean | false                    | Whether to support deleting songs in the list, corresponding to the event deleteMusic |
+| noLyricText        | String  | No lyrics, please enjoy  | Text to display without lyrics                                                        |
 
 event:
 
-| event name | return    | description                                                                 |
-| ---------- | --------- | --------------------------------------------------------------------------- |
-| onMusic    | MusicInfo | When the player is shown in full screen, the user clicks on the music name  |
-| onArtist   | MusicInfo | When the player is shown in full screen, the user clicks on the artist name |
-| updateData | MusicInfo | Request to refresh the music list                                           |
+| event name  | return                 | description                                                                 |
+| ----------- | ---------------------- | --------------------------------------------------------------------------- |
+| onMusic     | Music Info             | When the player is shown in full screen, the user clicks on the music name  |
+| onArtist    | Music Info             | When the player is shown in full screen, the user clicks on the artist name |
+| updateData  | Music Info             | Request to refresh the music list                                           |
+| deleteMusic | Which item in the list | Request to delete the nth music in the music list                           |
 
 playlist format:
 
@@ -129,6 +133,8 @@ playlist format:
     "name": "dual existence(remox)",
     //music source url
     "source": "/music/1.wav",
+    //Lyrics file URL (optional)
+    "lyric": "/lyric/1.lrc",
     //and other you want
     //this will not affect the Player
     //like music url?
@@ -144,6 +150,34 @@ playlist format:
 ]
 ```
 
+eleteMusic event:
+
+Put the following code into the layout Vue
+
+```vue
+<template>
+  ...
+  <Player
+    ...
+    :playlist="playlist"
+    :supportControlList="true"
+    @deleteMusic="deleteMusic"
+    ...
+  />
+  ...
+</template>
+export default {
+  ...
+  methods: {
+    ...
+    deleteMusic: function (num) {
+      this.Player.playlist.splice(num,1)
+      this.playlist = this.Player.playlist
+    },
+    ...
+  }
+```
+
 ## example
 
 Next, we will show a more complete project
@@ -157,9 +191,11 @@ app.vue
       defaultCover="/favicon.ico"
       :playlist="playlist"
       :localplw="plw"
+      :supportControlList="true"
       @pressMusicName="goMusic"
       @pressArtistName="goArtist"
       @updateData="update"
+      @deleteMusic="deleteMusic"
     />
 </template>
 <script>
@@ -199,7 +235,8 @@ export default {
             info.name = res.music_name;
             info.artist = res.music_artistname;
             info.source = "/Music/" + res.music_id + "/" + res.file_music;
-            info.cover = "/Music/" + res.music_id + "/" + res.file_cover;
+            info.cover = "/MusicCover/" + res.music_id + "/" + res.file_cover;
+            info.lyric = "/Lyric/" + res.music_id + "/" + res.file_lyric;
             info.artist_url = "/Users/" + res.music_artist;
             info.music_url = "/Music/" + res.music_id;
             resolve(info);
@@ -225,11 +262,21 @@ export default {
       this.$router.push(id.artist_url);
     },
     update: function () {
-      // refresh data
+      // Refresh data
       if (this.Player.playlist.length) {
         this.playlist = this.Player.playlist;
       }
-    }
+    },
+    deleteMusic: function (num) {
+      this.Player.playlist.splice(num,1)
+      this.playlist = this.Player.playlist
+      // Save to localstorage
+      var locallist = new Array();
+      for(var i = 0; this.playlist[i]; i++){
+        locallist[i] = this.playlist[i].id
+      }
+      localStorage.setItem("Player_list", JSON.stringify(locallist));
+    },
   }
 }
 </script>
@@ -260,7 +307,8 @@ export default {
         info.name = this.music_name;
         info.artist = this.user_name;
         info.source = "/Music/" + this.music_id + "/" + this.source;
-        info.cover = "/Music/" + this.music_id + "/" + this.cover;
+        info.cover = "/MusicCover/" + this.music_id + "/" + this.cover;
+        info.lyric = "/Lyric/" + this.music_id + "/" + this.lyric;
         info.artist_url = "/Users/" + this.music_artist;
         info.music_url = "/Music/" + this.music_id;
         playlist = this.Player.playlist;

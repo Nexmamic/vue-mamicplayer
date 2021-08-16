@@ -102,19 +102,23 @@ Vue.use(Player)
 
 参数:
 
-| 名称         | 类型    | 默认值 | 说明                             |
-| ------------ | ------- | ------ | -------------------------------- |
-| defaultCover | String  |        | 如果播放列表为空，则显示该图片   |
-| playlist     | Array   |        | 播放列表                         |
-| localplw     | Boolean | true   | 是否将要播放的音乐保存到本地存储 |
+| 名称                | 类型     | 默认值                    | 说明                                   |
+| ------------------ | ------- | ------------------------ | ------------------------------------- |
+| defaultCover       | String  |                          | 如果播放列表为空，则显示该图片              |
+| playlist           | Array   |                          | 播放列表                                |
+| localplw           | Boolean | true                     | 是否将要播放的音乐保存到本地存储            |
+| dse                | Boolean | false                    | 是否禁用背景特效                         |
+| supportControlList | Boolean | false                    | 是否支持删除列表中的歌，对应事件deleteMusic |
+| noLyricText        | String  | No lyrics, please enjoy  | 没有歌词时显示的文本                      |
 
 事件:
 
-| 名称       | 返回值    | 说明                                 |
-| ---------- | --------- | ------------------------------------ |
-| onMusic    | MusicInfo | 当播放器全屏显示时，用户单击音乐名称 |
-| onArtist   | MusicInfo | 当播放器全屏显示时，用户单击艺人名称 |
-| updateData | MusicInfo | 请求刷新音乐列表                     |
+| 名称         | 返回值         | 说明                                 |
+| ----------- | ------------- | ------------------------------------ |
+| onMusic     | 音乐信息        | 当播放器全屏显示时，用户单击音乐名称 |
+| onArtist    | 音乐信息        | 当播放器全屏显示时，用户单击艺人名称 |
+| updateData  | 音乐信息        | 请求刷新音乐列表                     |
+| deleteMusic | 在列表中的第几项 | 请求删除音乐列表第n个音乐       |
 
 播放列表格式:
 
@@ -123,12 +127,14 @@ Vue.use(Player)
   {
     //艺人名字
     "artist": "Amatke31",
-    //艺人头像url
+    //歌曲封面url
     "cover": "/img/1.png",
     //音乐名
     "name": "dual existence(remox)",
     //音乐文件url
     "source": "/music/1.wav",
+    //歌词文件url(可选)
+    "lyric": "/lyric/1.lrc",
     //你也可以加点其他的，这在很多事件中非常有用
     //这不会影响到Player
     //比如音乐介绍地址
@@ -144,6 +150,34 @@ Vue.use(Player)
 ]
 ```
 
+deleteMusic事件:
+
+将以下代码放入布局vue中
+
+```vue
+<template>
+  ...
+  <Player
+    ...
+    :playlist="playlist"
+    :supportControlList="true"
+    @deleteMusic="deleteMusic"
+    ...
+  />
+  ...
+</template>
+export default {
+  ...
+  methods: {
+    ...
+    deleteMusic: function (num) {
+      this.Player.playlist.splice(num,1)
+      this.playlist = this.Player.playlist
+    },
+    ...
+  }
+```
+
 ## example
 
 接下来，我们将展示一个更完整的项目
@@ -156,10 +190,12 @@ app.vue
   <Player
       defaultCover="/favicon.ico"
       :playlist="playlist"
-      :localplw="plw"
+      :localplw="true"
+      :supportControlList="true"
       @pressMusicName="goMusic"
       @pressArtistName="goArtist"
       @updateData="update"
+      @deleteMusic="deleteMusic"
     />
 </template>
 <script>
@@ -167,7 +203,6 @@ export default {
   data: function () {
     return {
       playlist: [],
-      plw: true,
     };
   },
   beforeMount() {
@@ -199,7 +234,8 @@ export default {
             info.name = res.music_name;
             info.artist = res.music_artistname;
             info.source = "/Music/" + res.music_id + "/" + res.file_music;
-            info.cover = "/Music/" + res.music_id + "/" + res.file_cover;
+            info.cover = "/MusicCover/" + res.music_id + "/" + res.file_cover;
+            info.lyric = "/Lyric/" + res.music_id + "/" + res.file_lyric;
             info.artist_url = "/Users/" + res.music_artist;
             info.music_url = "/Music/" + res.music_id;
             resolve(info);
@@ -229,7 +265,17 @@ export default {
       if (this.Player.playlist.length) {
         this.playlist = this.Player.playlist;
       }
-    }
+    },
+    deleteMusic: function (num) {
+      this.Player.playlist.splice(num,1)
+      this.playlist = this.Player.playlist
+      //储存到localStorage
+      var locallist = new Array();
+      for(var i = 0; this.playlist[i]; i++){
+        locallist[i] = this.playlist[i].id
+      }
+      localStorage.setItem("Player_list", JSON.stringify(locallist));
+    },
   }
 }
 </script>
@@ -260,7 +306,8 @@ export default {
         info.name = this.music_name;
         info.artist = this.user_name;
         info.source = "/Music/" + this.music_id + "/" + this.source;
-        info.cover = "/Music/" + this.music_id + "/" + this.cover;
+        info.cover = "/MusicCover/" + this.music_id + "/" + this.cover;
+        info.lyric = "/Lyric/" + this.music_id + "/" + this.lyric;
         info.artist_url = "/Users/" + this.music_artist;
         info.music_url = "/Music/" + this.music_id;
         playlist = this.Player.playlist;
