@@ -27,6 +27,8 @@ Let's have a look:
 
 ![](public/playermax-p.png)
 
+![](public/list.png)
+
 ## Install
 
 ```shell
@@ -176,6 +178,7 @@ export default {
     },
     ...
   }
+}
 ```
 
 ## example

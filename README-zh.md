@@ -27,6 +27,8 @@ MamicPlayer是Nexmamic的悬浮播放器
 
 ![](public/playermax-p.png)
 
+![](public/list.png)
+
 ## Install
 
 ```shell
@@ -176,6 +178,7 @@ export default {
     },
     ...
   }
+}
 ```
 
 ## example
